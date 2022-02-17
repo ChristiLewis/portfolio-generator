@@ -1,21 +1,19 @@
-const profileDataArgs = process.argv.slice(2, process.argv.length);
-console.log(profileDataArgs);
+//EDIT TO USE FS.WRITEFILE METHOD
+const fs = require('fs');
+//THIS IS A DESTINATION FILE TO RECEIVE THE LOCAL MODULE PAGE-TEMPLATE
+const generatePage = require('./src/page-template.js');
+//EDIT TO REMOVE THE (2, process.argv.length)- ONLY NEED (2) 
+const profileDataArgs = process.argv.slice(2);
 
 
+//ARRAY INDEX EXPRESSIONS with ES6 ASSIGNMENT DESTRUCTURING
+const [name, github] = profileDataArgs;
 
 
-const printProfileData = profileDataArr => {
-    //WE LOSE THE () ABOVE AND CHANGE i++ TO i += 1
-    for (let i = 0; i < profileDataArr.length; i += 1) {
-        console.log(profileDataArr[i]);
-    }  
-    
-    console.log('================');
+fs.writeFile('./index.html', generatePage(name, github), err => {
+    //REVISED FROM if (err) throw err;
+    if (err) throw new Error(err);
 
-    //THE ABOVE IS THE SAME AS THE BELOW
-    profileDataArr.forEach((profileItem) => {
-        console.log(profileItem) 
-    });
-};
+    console.log('Portfolio complete! Check out index.html to see the output!');
+});
 
-printProfileData(profileDataArgs);
