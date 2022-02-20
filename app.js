@@ -1,9 +1,6 @@
 //ADD NPM
 const inquirer = require('inquirer');
-//console.log(inquirer);
-
-///EDIT TO USE FS.WRITEFILE METHOD
-const fs = require('fs');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 ///THIS IS A DESTINATION FILE TO RECEIVE THE LOCAL MODULE PAGE-TEMPLATE
 const generatePage = require('./src/page-template.js');
 
@@ -46,20 +43,11 @@ const promptUser = () => {
             type: 'input',
             name: 'about',
             message: 'Provide some information about yourself: (Required)',
-            validate: aboutInput => {
-                if (aboutInput) {
-                    return true;
-                } else {
-                    console.log('Please enter a brief bio!');
-                    return false;
-                }
-            }
+            when: ({ confirmAbout }) => confirmAbout
         }
     ]);
 };
-
 //promptUser().then(answers => console.log(answers));
-
 const promptProject = portfolioData => {
     console.log( `
 ====================
@@ -78,7 +66,7 @@ Add a New Project
                 if (nameInput) {
                     return true;
                 } else {
-                    console.log('Please enter your project name!');
+                    console.log('You need to enter your project name!');
                     return false;
                 }
             }
@@ -91,7 +79,7 @@ Add a New Project
                 if (descriptionInput) {
                     return true;
                 } else {
-                    console.log('Please enter a project description!');
+                    console.log('You need to enter a project description!');
                     return false;
                 }
             }
@@ -105,12 +93,12 @@ Add a New Project
         {
             type: 'input',
             name: 'link',
-            message: 'ENter the GitHub link to your project. (Required)',
+            message: 'Enter the GitHub link to your project. (Required)',
             validate: linkInput => {
                 if (linkInput) {
                     return true;
                 } else {
-                    console.log('Please enter the GitHub link to your project!');
+                    console.log('You need to enter the GitHub link to your project!');
                     return false;
                 }
             }
@@ -142,14 +130,21 @@ Add a New Project
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        const pageHTML = generatePage(portfolioData);
-
-        fs.writeFile('./index.html', generatePage(portfolioData), err => {
-        if (err) throw new Error(err);
-  
-        console.log('Page created! Check out index.html in this directory to see it!');
-        });
-      
+        return generatePage(portfolioData);
+    //REFACTORED USING GENERATE-SITE.JS        
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })   
+    .catch(err => {
+        console.log(err);
     });
 
 
